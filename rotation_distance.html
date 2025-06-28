@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotation Distance Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+    form { background: #fff; padding: 2em; border-radius: 8px; box-shadow: 0 2px 8px #0001; max-width: 400px; }
+    label { display: block; margin-top: 1em; }
+    input[type="number"] { width: 100%; padding: 0.5em; margin-top: 0.2em; border: 1px solid #ccc; border-radius: 4px; }
+    input[readonly] { background: #f0f0f0; }
+    .result { font-weight: bold; color: #2a7; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h2>Klipper Extruder Rotation Distance Calculator</h2>
+  <form id="rotationForm" autocomplete="off">
+    <label>
+      Initial mark distance (mm):
+      <input type="number" id="initialMark" step="0.01" min="0" required>
+    </label>
+    <label>
+      Subsequent mark distance (mm):
+      <input type="number" id="subsequentMark" step="0.01" min="0" required>
+    </label>
+    <label>
+      Previous rotation distance:
+      <input type="number" id="prevRotation" step="0.001" min="0" required>
+    </label>
+    <label>
+      Requested extrude distance (mm):
+      <input type="number" id="requestedExtrude" step="0.01" min="0.01" value="50" required>
+    </label>
+    <label>
+      Actual extrude distance (mm):
+      <input type="number" id="actualExtrude" step="0.01" readonly>
+    </label>
+    <label>
+      New rotation distance:
+      <input type="number" id="newRotation" step="0.001" readonly>
+    </label>
+  </form>
+  <script>
+    function calculate() {
+      const initial = parseFloat(document.getElementById('initialMark').value) || 0;
+      const subsequent = parseFloat(document.getElementById('subsequentMark').value) || 0;
+      const prevRot = parseFloat(document.getElementById('prevRotation').value) || 0;
+      const reqExtrude = parseFloat(document.getElementById('requestedExtrude').value) || 0;
+      const actualExtrude = initial - subsequent;
+      document.getElementById('actualExtrude').value = actualExtrude > 0 ? actualExtrude.toFixed(2) : '';
+      let newRot = '';
+      if (actualExtrude > 0 && reqExtrude > 0 && prevRot > 0) {
+        newRot = (prevRot * actualExtrude / reqExtrude).toFixed(3);
+      }
+      document.getElementById('newRotation').value = newRot;
+    }
+    document.querySelectorAll('#rotationForm input').forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+  </script>
+</body>
+</html>
